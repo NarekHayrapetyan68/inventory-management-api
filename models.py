@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+import enum
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -13,13 +14,17 @@ class Product(Base):
     price = Column(Float)
     stock = Column(Integer)
 
+class OrderStatusEnum(enum.Enum):
+    pending = "pending"
+    sent = "sent"
+    delivered = "delivered"
 
 class Order(Base):
     __tablename__ = 'orders'
 
     id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, default=func.now())
-    status = Column(String, default="в процессе")
+    status = Column(Enum(OrderStatusEnum), default=OrderStatusEnum.pending)
 
 
 class OrderItem(Base):
