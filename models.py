@@ -14,10 +14,15 @@ class Product(Base):
     price = Column(Float)
     stock = Column(Integer)
 
+    # Define a back reference for OrderItem
+    order_items = relationship("OrderItem", back_populates="product")
+
+
 class OrderStatusEnum(enum.Enum):
     pending = "pending"
     sent = "sent"
     delivered = "delivered"
+
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -25,6 +30,9 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, default=func.now())
     status = Column(Enum(OrderStatusEnum), default=OrderStatusEnum.pending)
+
+    # Define a relationship to OrderItem
+    items = relationship("OrderItem", back_populates="order")
 
 
 class OrderItem(Base):
@@ -36,4 +44,4 @@ class OrderItem(Base):
     quantity = Column(Integer)
 
     order = relationship("Order", back_populates="items")
-    product = relationship("Product")
+    product = relationship("Product", back_populates="order_items")  # Back reference to Product
